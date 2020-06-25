@@ -80,7 +80,18 @@ function newCard({ bookInfo, isCreated }) {
     del.appendChild(delImg); // создаем иконку для кнопки "удалить"
 
     del.addEventListener('click', function () {
-        conteiner.removeChild(div);
+        conteiner.removeChild(div); //удаляем визуально карточку
+        const index = search.findIndex(i => i.nameBook === nameBook); 
+        /*
+        находим индекс нужной нам карточки в массиве (т.е. необходимый объект),
+        и сохраняем в переменную. Для этого делаем эрроу функцию, которая означает
+        function (i) {return i.nameBook === nameBook;} - то есть. findIndex как цикл проходит 
+        по каждому объекту в массиве, и когда находит совпадение по имени книги между 
+        i.nameBook и nameBook (в текущем диве). Тем самым возвращает индекс массива на котором остановился.
+        */
+        search.splice(index, 1); // удаляем из массива найденный индекс и только его (1)
+        const searchString = JSON.stringify(search); // переводим в текст
+        localStorage.setItem('search', searchString); // сохнаяем мой массив под ключем 'search' 
     });
 
     const divNameBook = document.createElement("div");
@@ -107,6 +118,48 @@ function newCard({ bookInfo, isCreated }) {
 
         text(divNameBook, nameBook);
         text(divAutorBook, autorBook);
+
+        edit.addEventListener('click', function () { //когда нажимаем кнопку "изменить"
+            divNameBook.innerText = ''; // удаляем текст
+            const nameChange = input('info', 'Название', divNameBook); // создаем строку
+            nameChange.value = bookInfo.nameBook; // вставляем в строку старое значение текста
+
+            divAutorBook.innerText = '';
+            const autorChange = input('info', 'Автор', divAutorBook);
+            autorChange.value = bookInfo.autorBook;
+
+            const urlChage = input('info', 'Url обложки', divImgBook, 'text');
+            if (bookInfo.urlBook != undefined){
+                urlChage.value = bookInfo.urlBook;
+            }else{
+                urlChage.value = '';
+            }
+            
+
+            const save = document.createElement("button"); // создаем в памяти кнопку сохранить
+            save.classList.add('createBook'); // присваеваем класс
+            save.innerText = 'Сохранить'; // вставляем текст в кнопку
+            divInfo.appendChild(save); //добавляем эту кнопку
+
+            divDelOrChange.removeChild(edit); // удаляем кнопку изменить
+
+            save.addEventListener('click', function () { // при нажатии на кнопку "сохранить"
+                text(divNameBook, nameChange.value);
+                bookInfo.nameBook = nameChange.value;
+                text(divAutorBook, autorChange.value);
+                bookInfo.autorBook = autorChange.value;
+                if (urlChage.value != '') {
+                    bookInfo.urlBook = urlChage.value;
+                    cover.src = bookInfo.urlBook;
+                }
+                divInfo.removeChild(save);
+                divImgBook.removeChild(urlChage);
+                divDelOrChange.appendChild(edit);
+
+                searchString = JSON.stringify(search);
+                localStorage.setItem('search', searchString);
+            });
+        });
     }
 
     const divStrBook = document.createElement("div");
@@ -131,11 +184,14 @@ function newCard({ bookInfo, isCreated }) {
         divInfo.appendChild(createBook); //добавляем кнопку "создать"
 
         createBook.addEventListener('click', function () { //кнопка создать
+            bookInfo.nameBook = name.value
             text(divNameBook, name.value);
+            bookInfo.autorBook = autor.value
             text(divAutorBook, autor.value);
+
             if (image.value != '') {
                 bookInfo.urlBook = image.value; //сохраняем url в объект
-                cover.src = bookInfo.urlBook; //вставляет обложку по url, при условии что стока не пустая
+                cover.src = bookInfo.urlBook; //вставляет обложку по url, при условии что строка не пустая
             }
             divInfo.removeChild(createBook); // удалить кнопку создать
             divImgBook.removeChild(image); // удалить div с вводом url
@@ -152,7 +208,7 @@ function newCard({ bookInfo, isCreated }) {
             search.push(bookInfo);
 
             let searchString = JSON.stringify(search);
-            localStorage.setItem('base', searchString);
+            localStorage.setItem('search', searchString);
 
             edit.addEventListener('click', function () { //когда нажимаем кнопку "изменить"
                 divNameBook.innerText = ''; // удаляем текст
@@ -164,7 +220,11 @@ function newCard({ bookInfo, isCreated }) {
                 autorChange.value = bookInfo.autorBook;
 
                 let urlChage = input('info', 'Url обложки', divImgBook, 'text');
-                urlChage.value = bookInfo.urlBook;
+                if (bookInfo.urlBook != undefined){
+                    urlChage.value = bookInfo.urlBook;
+                }else{
+                    urlChage.value = '';
+                }
 
                 const save = document.createElement("button"); // создаем в памяти кнопку сохранить
                 save.classList.add('createBook'); // присваеваем класс
@@ -174,7 +234,10 @@ function newCard({ bookInfo, isCreated }) {
                 divDelOrChange.removeChild(edit); // удаляем кнопку изменить
 
                 save.addEventListener('click', function () { // при нажатии на кнопку "сохранить"
-                    text(nameChange, autorChange);
+                    text(divNameBook, nameChange.value);
+                    bookInfo.nameBook = nameChange.value;
+                    text(divAutorBook, autorChange.value);
+                    bookInfo.autorBook = autorChange.value;
                     if (urlChage.value != '') {
                         bookInfo.urlBook = urlChage.value;
                         cover.src = bookInfo.urlBook;
@@ -182,8 +245,9 @@ function newCard({ bookInfo, isCreated }) {
                     divInfo.removeChild(save);
                     divImgBook.removeChild(urlChage);
                     divDelOrChange.appendChild(edit);
+
                     searchString = JSON.stringify(search);
-                    localStorage.setItem('base', searchString);
+                    localStorage.setItem('search', searchString);
                 });
             });
 
@@ -193,7 +257,7 @@ function newCard({ bookInfo, isCreated }) {
     return div;
 }
 
-let search = JSON.parse(localStorage.getItem('base'));
+let search = JSON.parse(localStorage.getItem('search'));
 
 if (search === null) {
     search = [];
@@ -227,7 +291,6 @@ newBook.addEventListener('click', function () {
         nameBook: '',
         autorBook: ''
     };
-
     newCard({ bookInfo, isCreated: false });
 });
 
@@ -254,9 +317,9 @@ buttonSearch.addEventListener('click', function () {
     }
 });
 
-function text(divNameAuthor, key) {
+function text(divNameAuthor, value) {
     divNameAuthor.style.fontWeight = 'bold';
     divNameAuthor.style.fontSize = '25px';
-    //key = valueNameAuthor.value;
-    divNameAuthor.innerText = key;
+    divNameAuthor.innerText = value;
 }
+
