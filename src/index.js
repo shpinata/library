@@ -79,15 +79,15 @@ function newCard({ bookInfo, isCreated }) {
     divDelOrChange.appendChild(del); //создаем кнопку "удалить"
     del.appendChild(delImg); // создаем иконку для кнопки "удалить"
 
-    del.addEventListener('click', function () {
+    del.addEventListener('click', function () { 
         conteiner.removeChild(div); //удаляем визуально карточку
         const index = search.findIndex(i => i.nameBook === nameBook); 
         /*
-        находим индекс нужной нам карточки в массиве (т.е. необходимый объект),
-        и сохраняем в переменную. Для этого делаем эрроу функцию, которая означает
-        function (i) {return i.nameBook === nameBook;} - то есть. findIndex как цикл проходит 
-        по каждому объекту в массиве, и когда находит совпадение по имени книги между 
-        i.nameBook и nameBook (в текущем диве). Тем самым возвращает индекс массива на котором остановился.
+            находим индекс нужной нам карточки в массиве (т.е. необходимый объект),
+            и сохраняем в переменную. Для этого делаем эрроу функцию, которая означает
+            function (i) {return i.nameBook === nameBook;} - то есть. findIndex как цикл проходит 
+            по каждому объекту в массиве, и когда находит совпадение по имени книги между 
+            i.nameBook и nameBook (в текущем диве). Тем самым возвращает индекс массива на котором остановился.
         */
         search.splice(index, 1); // удаляем из массива найденный индекс и только его (1)
         const searchString = JSON.stringify(search); // переводим в текст
