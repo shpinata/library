@@ -1,6 +1,11 @@
 const newBook = document.getElementById('newBook');
 const conteiner = document.getElementById('conteiner');
 
+function text(div, value, px) {
+    div.style.fontWeight = 'bold';
+    div.style.fontSize = px;
+    div.innerText = value;
+}
 /*
     function newCard ({ urlBook }) { } тоже самое, что
 
@@ -106,77 +111,21 @@ function newCard({ bookInfo, isCreated }) {
     divImgBook.classList.add('infoBook');
     divInfo.appendChild(divImgBook);    //создаем div для ссылки на обложку книги
 
-    if (isCreated) {
-        const edit = document.createElement('button'); //создаем кнопку изменить в памяти
-        edit.classList.add('divIcon'); //присваиваем класс
-        divDelOrChange.appendChild(edit); // добавляем кнопку изменить
-
-        let changeImg = new Image(); // создаем новый элемент изображения для кнопки "изменить"
-        changeImg.src = 'image/add.svg'; //указываем путь картинке для кнопки "изменить"
-        changeImg.classList.add('icon'); // присваевам класс
-        edit.appendChild(changeImg); //добавляем картинку к кнопке "изменить"
-
-        text(divNameBook, nameBook);
-        text(divAutorBook, autorBook);
-
-        edit.addEventListener('click', function () { //когда нажимаем кнопку "изменить"
-            divNameBook.innerText = ''; // удаляем текст
-            const nameChange = input('info', 'Название', divNameBook); // создаем строку
-            nameChange.value = bookInfo.nameBook; // вставляем в строку старое значение текста
-
-            divAutorBook.innerText = '';
-            const autorChange = input('info', 'Автор', divAutorBook);
-            autorChange.value = bookInfo.autorBook;
-
-            const urlChage = input('info', 'Url обложки', divImgBook, 'text');
-            if (bookInfo.urlBook != undefined){
-                urlChage.value = bookInfo.urlBook;
-            }else{
-                urlChage.value = '';
-            }
-            
-
-            const save = document.createElement("button"); // создаем в памяти кнопку сохранить
-            save.classList.add('createBook'); // присваеваем класс
-            save.innerText = 'Сохранить'; // вставляем текст в кнопку
-            divInfo.appendChild(save); //добавляем эту кнопку
-
-            divDelOrChange.removeChild(edit); // удаляем кнопку изменить
-
-            save.addEventListener('click', function () { // при нажатии на кнопку "сохранить"
-                text(divNameBook, nameChange.value);
-                bookInfo.nameBook = nameChange.value;
-                text(divAutorBook, autorChange.value);
-                bookInfo.autorBook = autorChange.value;
-                if (urlChage.value != '') {
-                    bookInfo.urlBook = urlChage.value;
-                    cover.src = bookInfo.urlBook;
-                }
-                divInfo.removeChild(save);
-                divImgBook.removeChild(urlChage);
-                divDelOrChange.appendChild(edit);
-
-                searchString = JSON.stringify(search);
-                localStorage.setItem('search', searchString);
-            });
-        });
-    }
-
     const divStrBook = document.createElement("div");
     divStrBook.classList.add('infoBook');
     divInfo.appendChild(divStrBook);       //создаем div для отслеживания прочитанных страниц книги
-    input('info', 'Прочитано страниц', divStrBook, 'number');//создаем поле для ввода страниц
 
     const divPlace = document.createElement("divPlace");
     divPlace.classList.add('divPlace');
     divPlace.innerText = 'Прочитано:';
     divInfo.appendChild(divPlace);
-    input('inputRead', null, divPlace, 'checkbox');
-
+    
     if (!isCreated) {
         const name = input('info', 'Название', divNameBook); //создаем поле для ввода названия пользователем
         const autor = input('info', 'Автор', divAutorBook);//создаем поле для ввода автора пользователем
         const image = input('info', 'Url обложки', divImgBook, 'text'); // создаем поле для ввода url обложки
+        const str = input('info', 'Количество страниц', divStrBook, 'number');//создаем поле для ввода страниц
+        const plase = input('inputRead', null, divPlace, 'checkbox');
 
         const createBook = document.createElement("button");
         createBook.classList.add('createBook');
@@ -184,15 +133,17 @@ function newCard({ bookInfo, isCreated }) {
         divInfo.appendChild(createBook); //добавляем кнопку "создать"
 
         createBook.addEventListener('click', function () { //кнопка создать
-            bookInfo.nameBook = name.value
-            text(divNameBook, name.value);
+            bookInfo.nameBook = name.value;
+            text(divNameBook, name.value, '25px');
             bookInfo.autorBook = autor.value
-            text(divAutorBook, autor.value);
-
+            text(divAutorBook, autor.value, '25px');
             if (image.value != '') {
                 bookInfo.urlBook = image.value; //сохраняем url в объект
                 cover.src = bookInfo.urlBook; //вставляет обложку по url, при условии что строка не пустая
-            }
+            } 
+            bookInfo.strBook = str.value;
+            text(divStrBook, str.value, '15px');
+
             divInfo.removeChild(createBook); // удалить кнопку создать
             divImgBook.removeChild(image); // удалить div с вводом url
 
@@ -225,6 +176,9 @@ function newCard({ bookInfo, isCreated }) {
                 }else{
                     urlChage.value = '';
                 }
+                divStrBook.innerText = '';
+                let strChange = input('info', 'Количество страниц', divStrBook, 'number');
+                strChange.value = bookInfo.strBook;
 
                 const save = document.createElement("button"); // создаем в памяти кнопку сохранить
                 save.classList.add('createBook'); // присваеваем класс
@@ -234,14 +188,17 @@ function newCard({ bookInfo, isCreated }) {
                 divDelOrChange.removeChild(edit); // удаляем кнопку изменить
 
                 save.addEventListener('click', function () { // при нажатии на кнопку "сохранить"
-                    text(divNameBook, nameChange.value);
+                    text(divNameBook, nameChange.value, '25px');
                     bookInfo.nameBook = nameChange.value;
-                    text(divAutorBook, autorChange.value);
+                    text(divAutorBook, autorChange.value, '25px');
                     bookInfo.autorBook = autorChange.value;
                     if (urlChage.value != '') {
                         bookInfo.urlBook = urlChage.value;
                         cover.src = bookInfo.urlBook;
                     }
+                    text(divStrBook, str.value, '15px');
+                    bookInfo.strBook = strChange.value;
+                    
                     divInfo.removeChild(save);
                     divImgBook.removeChild(urlChage);
                     divDelOrChange.appendChild(edit);
@@ -251,6 +208,60 @@ function newCard({ bookInfo, isCreated }) {
                 });
             });
 
+        });
+    }
+    if (isCreated) {
+        const edit = document.createElement('button'); //создаем кнопку изменить в памяти
+        edit.classList.add('divIcon'); //присваиваем класс
+        divDelOrChange.appendChild(edit); // добавляем кнопку изменить
+
+        let changeImg = new Image(); // создаем новый элемент изображения для кнопки "изменить"
+        changeImg.src = 'image/add.svg'; //указываем путь картинке для кнопки "изменить"
+        changeImg.classList.add('icon'); // присваевам класс
+        edit.appendChild(changeImg); //добавляем картинку к кнопке "изменить"
+
+        text(divNameBook, nameBook, '25px');
+        text(divAutorBook, autorBook, '25px');
+
+        edit.addEventListener('click', function () { //когда нажимаем кнопку "изменить"
+            divNameBook.innerText = ''; // удаляем текст
+            const nameChange = input('info', 'Название', divNameBook); // создаем строку
+            nameChange.value = bookInfo.nameBook; // вставляем в строку старое значение текста
+
+            divAutorBook.innerText = '';
+            const autorChange = input('info', 'Автор', divAutorBook);
+            autorChange.value = bookInfo.autorBook;
+
+            const urlChage = input('info', 'Url обложки', divImgBook, 'text');
+            if (bookInfo.urlBook != undefined){
+                urlChage.value = bookInfo.urlBook;
+            }else{
+                urlChage.value = '';
+            }
+            
+            const save = document.createElement("button"); // создаем в памяти кнопку сохранить
+            save.classList.add('createBook'); // присваеваем класс
+            save.innerText = 'Сохранить'; // вставляем текст в кнопку
+            divInfo.appendChild(save); //добавляем эту кнопку
+
+            divDelOrChange.removeChild(edit); // удаляем кнопку изменить
+
+            save.addEventListener('click', function () { // при нажатии на кнопку "сохранить"
+                text(divNameBook, nameChange.value, '25px');
+                bookInfo.nameBook = nameChange.value;
+                text(divAutorBook, autorChange.value, '25px');
+                bookInfo.autorBook = autorChange.value;
+                if (urlChage.value != '') {
+                    bookInfo.urlBook = urlChage.value;
+                    cover.src = bookInfo.urlBook;
+                }
+                divInfo.removeChild(save);
+                divImgBook.removeChild(urlChage);
+                divDelOrChange.appendChild(edit);
+
+                searchString = JSON.stringify(search);
+                localStorage.setItem('search', searchString);
+            });
         });
     }
 
@@ -263,11 +274,8 @@ if (search === null) {
     search = [];
 }
 
-function base(a) {
-    search[a].element = newCard({
-        bookInfo: search[a],
-        isCreated: true
-    });
+for (let i = 0; i < search.length; i++) {
+    search[i].element = newCard({bookInfo: search[i], isCreated: true});
     /*
     создаем в объекте ключ element (он используется при фильтрации), для этого нужно из функции вытащить div
     для этого возвращаем его через return. в данном случае мы сделали аналогично этому коду: 
@@ -280,10 +288,6 @@ function base(a) {
     });
     b = search[a].element;
     */
-}
-
-for (let i = 0; i < search.length; i++) {
-    base(i);
 }
 
 newBook.addEventListener('click', function () {
@@ -317,9 +321,5 @@ buttonSearch.addEventListener('click', function () {
     }
 });
 
-function text(divNameAuthor, value) {
-    divNameAuthor.style.fontWeight = 'bold';
-    divNameAuthor.style.fontSize = '25px';
-    divNameAuthor.innerText = value;
-}
+
 
