@@ -8,7 +8,7 @@ function text(div, value, px) {
 }
 
 function newCard({ bookInfo, isCreated }) {
-    const { urlBook = 'image/no-book3.jpg', nameBook, autorBook } = bookInfo;
+    const { urlBook = 'image/no-book3.jpg', nameBook, autorBook, strBook } = bookInfo;
 
     const div = document.createElement("div");
     div.classList.add('div');
@@ -169,6 +169,7 @@ function newCard({ bookInfo, isCreated }) {
     if (isCreated) { // когда 
         text(divNameBook, nameBook, '25px');
         text(divAutorBook, autorBook, '25px');
+        text(divStrBook, strBook, '15px');
 
         change ();
     }
@@ -200,7 +201,9 @@ for (let i = 0; i < search.length; i++) {
 newBook.addEventListener('click', function () {
     let bookInfo = { // объект для хранения промежуточных данных
         nameBook: '',
-        autorBook: ''
+        autorBook: '',
+        strBook: '',
+        element: ''
     };
     newCard({ bookInfo, isCreated: false });
 });
@@ -228,5 +231,10 @@ buttonSearch.addEventListener('click', function () {
     }
 });
 
-
-
+siteSearch.addEventListener('change', function () {
+    if (siteSearch.value == ''){
+        for (let i = 0; i < search.length; i++){
+            search[i].element.style.display = 'flex';
+        }
+    }
+});
