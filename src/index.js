@@ -1,14 +1,13 @@
 const newBook = document.getElementById('newBook');
 const conteiner = document.getElementById('conteiner');
 
-function text(div, value, px) {
+function text(div, value) {
     div.style.fontWeight = 'bold';
-    div.style.fontSize = px;
     div.innerText = value;
 }
 
 function newCard({ bookInfo, isCreated }) {
-    const { urlBook = 'image/no-book3.jpg', nameBook, autorBook, strBook } = bookInfo;
+    const { urlBook = 'image/no-book3.jpg', nameBook, autorBook, strBook, chekBook } = bookInfo;
 
     const div = document.createElement("div");
     div.classList.add('div');
@@ -68,10 +67,24 @@ function newCard({ bookInfo, isCreated }) {
     divStrBook.classList.add('infoBook');
     divInfo.appendChild(divStrBook);       //создаем div для отслеживания прочитанных страниц книги
 
-    const divPlace = document.createElement("divPlace");
+    const divPlace = document.createElement("div");
     divPlace.classList.add('divPlace');
-    divPlace.innerText = 'Прочитано:';
     divInfo.appendChild(divPlace);
+    const divPlaceText = document.createElement("div");
+    divPlaceText.classList.add('divPlace2');
+    divPlaceText.innerText = 'Прочитано:';
+    divPlace.appendChild(divPlaceText);
+    const divPlaceChek = document.createElement("div");
+    divPlaceChek.classList.add('divPlace2');
+    divPlace.appendChild(divPlaceChek);
+
+    const divCreateBook = document.createElement("div");
+    divCreateBook.classList.add('divCreateBook');
+    divInfo.appendChild(divCreateBook);
+
+    const chekImg = new Image(); // картинка галочки
+    chekImg.src = 'image/checkmark.svg';
+    chekImg.classList.add('iconChek');
 
     function change () {
         const edit = document.createElement('button'); //создаем кнопку изменить в памяти
@@ -102,26 +115,48 @@ function newCard({ bookInfo, isCreated }) {
             let strChange = input('info', 'Количество страниц', divStrBook, 'number');
             strChange.value = bookInfo.strBook;
 
+            let plase;
+
+            if (bookInfo.chekBook == true){
+                divPlaceChek.removeChild(chekImg);
+                plase = input('inputRead', null, divPlaceChek, 'checkbox');
+                plase.checked = true;
+            }else{
+                divPlaceText.innerText = 'Прочитано:';                
+                plase = input('inputRead', null, divPlaceChek, 'checkbox');
+                plase.checked = false;
+            }
+
             const save = document.createElement("button"); // создаем в памяти кнопку сохранить
             save.classList.add('createBook'); // присваеваем класс
             save.innerText = 'Сохранить'; // вставляем текст в кнопку
-            divInfo.appendChild(save); //добавляем эту кнопку
+            divCreateBook.appendChild(save); //добавляем эту кнопку
 
             divDelOrChange.removeChild(edit); // удаляем кнопку изменить
 
             save.addEventListener('click', function () { // при нажатии на кнопку "сохранить"
-                text(divNameBook, nameChange.value, '25px');
+                text(divNameBook, nameChange.value);
                 bookInfo.nameBook = nameChange.value;
-                text(divAutorBook, autorChange.value, '25px');
+                text(divAutorBook, autorChange.value);
                 bookInfo.autorBook = autorChange.value;
                 if (urlChage.value != '') {
                     bookInfo.urlBook = urlChage.value;
                     cover.src = bookInfo.urlBook;
                 }
-                text(divStrBook, strChange.value, '15px');
+                text(divStrBook, strChange.value);
                 bookInfo.strBook = strChange.value;
-                
-                divInfo.removeChild(save);
+
+                if (plase.checked == true){
+                    divPlaceChek.removeChild(plase);
+                    divPlaceChek.appendChild(chekImg);
+                    bookInfo.chekBook = true;
+                }else{
+                    divPlaceText.innerText = '';
+                    divPlaceChek.innerText = '';
+                    bookInfo.chekBook = false;
+                }
+
+                divCreateBook.removeChild(save);
                 divImgBook.removeChild(urlChage);
                 divDelOrChange.appendChild(edit);
 
@@ -136,26 +171,35 @@ function newCard({ bookInfo, isCreated }) {
         const autor = input('info', 'Автор', divAutorBook);//создаем поле для ввода автора пользователем
         const image = input('info', 'Url обложки', divImgBook, 'text'); // создаем поле для ввода url обложки
         const str = input('info', 'Количество страниц', divStrBook, 'number');//создаем поле для ввода страниц
-        const plase = input('inputRead', null, divPlace, 'checkbox');
+        const plase = input('inputRead', null, divPlaceChek, 'checkbox');
 
         const createBook = document.createElement("button");
         createBook.classList.add('createBook');
         createBook.innerText = 'Создать';
-        divInfo.appendChild(createBook); //добавляем кнопку "создать"
+        divCreateBook.appendChild(createBook); //добавляем кнопку "создать"
 
         createBook.addEventListener('click', function () { //кнопка создать
             bookInfo.nameBook = name.value;
-            text(divNameBook, name.value, '25px');
+            text(divNameBook, name.value);
             bookInfo.autorBook = autor.value
-            text(divAutorBook, autor.value, '25px');
+            text(divAutorBook, autor.value);
             if (image.value != '') {
                 bookInfo.urlBook = image.value; //сохраняем url в объект
                 cover.src = bookInfo.urlBook; //вставляет обложку по url, при условии что строка не пустая
             } 
             bookInfo.strBook = str.value;
-            text(divStrBook, str.value, '15px');
+            text(divStrBook, str.value);
+            if (plase.checked == true){
+                divPlaceChek.removeChild(plase);
+                divPlaceChek.appendChild(chekImg);
+                bookInfo.chekBook = true;
+            }else{
+                divPlaceText.innerText = '';
+                divPlaceChek.innerText = '';
+                bookInfo.chekBook = false;
+            }
 
-            divInfo.removeChild(createBook); // удалить кнопку создать
+            divCreateBook.removeChild(createBook); // удалить кнопку создать
             divImgBook.removeChild(image); // удалить div с вводом url
 
             change ();
@@ -166,10 +210,16 @@ function newCard({ bookInfo, isCreated }) {
             localStorage.setItem('search', searchString);
         });
     }
-    if (isCreated) { // когда 
-        text(divNameBook, nameBook, '25px');
-        text(divAutorBook, autorBook, '25px');
-        text(divStrBook, strBook, '15px');
+    if (isCreated) { // отрисовка после перезагрузки
+        text(divNameBook, nameBook);
+        text(divAutorBook, autorBook);
+        text(divStrBook, strBook);
+        if (bookInfo.chekBook == true){
+            divPlaceChek.appendChild(chekImg);
+        }else{
+            divPlaceText.innerText = '';
+            divPlaceChek.innerText = '';           
+        }
 
         change ();
     }
@@ -203,7 +253,7 @@ newBook.addEventListener('click', function () {
         nameBook: '',
         autorBook: '',
         strBook: '',
-        element: ''
+        chekBook: ''
     };
     newCard({ bookInfo, isCreated: false });
 });
