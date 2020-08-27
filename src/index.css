@@ -186,3 +186,7 @@ input[type="search"]::-moz-placeholder {
     border-bottom-left-radius: 0;
     padding-left: 5px;
 }
+
+#text {
+    font-size: 20px;
+}

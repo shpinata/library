@@ -3,6 +3,7 @@ const conteiner = document.getElementById('conteiner');
 
 function text(div, value) {
     div.style.fontWeight = 'bold';
+    div.style.fontSize = '18px';
     div.innerText = value;
 }
 
